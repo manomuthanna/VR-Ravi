@@ -1,0 +1,144 @@
+# This workflow will build and push a web application to an Azure Static Web App when you change your code.
+#
+# This workflow assumes you have already created the target Azure Static Web App.
+# For instructions see https://docs.microsoft.com/azure/static-web-apps/get-started-portal
+#
+# To configure this workflow:
+#
+# 1. Set up an environment secret in your repository named AZURE_STATIC_WEB_APPS_API_TOKEN with the value of your Static Web Apps deployment token.
+#    For instructions on obtaining the deployment token see: https://docs.microsoft.com/azure/static-web-apps/deployment-token-management
+#
+# 2. Change the values for the APP_LOCATION, API_LOCATION and APP_ARTIFACT_LOCATION, AZURE_STATIC_WEB_APPS_API_TOKEN environment variables (below).
+#    For instructions on setting up the appropriate configuration values go to https://docs.microsoft.com/azure/static-web-apps/front-end-frameworks
+
+name: Azure Static Web Apps CI/CD
+
+on:
+  push:
+    branches:
+      - '**' # Every branch
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - '**' # Every branch
+      
+# Environment variables available to all jobs and steps in this workflow
+env:
+  APP_LOCATION: "sm4-filemanager-frontend" # App source code path relative to repository root
+  API_LOCATION: "sm4-filemanager-frontend/api" # Api source code path relative to repository root - optional
+  APP_ARTIFACT_LOCATION: "public" # Built app content directory, relative to app_location - optional
+  NODE_VERSION: "16.x"
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_deploy_job_dev:
+    permissions:
+      contents: read        # For actions/checkout to fetch code
+      pull-requests: write  # For Azure/static-web-apps-deploy to comment on PRs
+    if: |
+      !contains(github.ref, 'master') &&
+      (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed'))
+    runs-on: ubuntu-latest
+    environment: dev
+    name: Build and deploy to development environment
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (i.e. PR comments)
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm' # Unclear if caching npm is necessary. Remove if not.
+          cache-dependency-path: ${{ env.APP_LOCATION }}/package-lock.json
+      - name: NPM clean install
+        run: cd $APP_LOCATION && npm ci
+      - name: Build with NPM
+        run: cd $APP_LOCATION && npm run build
+      - name: Deploy to dev
+        id: deploydev
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "upload"
+          app_location: ${{ env.APP_LOCATION }}
+          api_location: ${{ env.API_LOCATION }}
+          app_artifact_location: ${{ env.APP_ARTIFACT_LOCATION }}
+
+  build_and_deploy_job_test:
+    permissions:
+      contents: read        # for actions/checkout to fetch code
+      pull-requests: write  # for Azure/static-web-apps-deploy to comment on PRs
+    if: |
+      endswith(github.ref, '/master') &&
+      (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed'))
+    runs-on: ubuntu-latest
+    environment: test
+    name: Build and deploy to test environment
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (i.e. PR comments)
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm' # Unclear if caching npm is necessary. Remove if not.
+          cache-dependency-path: sm4-filemanager-frontend/package-lock.json
+      - name: NPM clean install
+        run: cd $APP_LOCATION && npm ci
+      - name: Build with NPM
+        run: cd $APP_LOCATION && npm run build
+      - name: Deploy to test
+        id: deploytest
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "upload"
+          app_location: ${{ env.APP_LOCATION }}
+          api_location: ${{ env.API_LOCATION }}
+          app_artifact_location: ${{ env.APP_ARTIFACT_LOCATION }}
+
+  build_and_deploy_job_prod:
+    permissions:
+      contents: read        # for actions/checkout to fetch code
+      pull-requests: write  # for Azure/static-web-apps-deploy to comment on PRs
+    needs: build_and_deploy_job_test # Test env deploy needs to run first. Doesn't enforce success.
+    if: |
+      success() &&
+      endswith(github.ref, '/master') &&
+      (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed'))
+    runs-on: ubuntu-latest
+    environment: prod
+    name: Build and deploy to production environment
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (i.e. PR comments)
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm' # Unclear if caching npm is necessary. Remove if not.
+          cache-dependency-path: sm4-filemanager-frontend/package-lock.json
+      - name: NPM clean install
+        run: cd $APP_LOCATION && npm ci
+      - name: Build with NPM
+        run: cd $APP_LOCATION && npm run build
+      - name: Deploy to prod
+        id: deployprod
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "upload"
+          app_location: ${{ env.APP_LOCATION }}
+          api_location: ${{ env.API_LOCATION }}
+          app_artifact_location: ${{ env.APP_ARTIFACT_LOCATION }}
