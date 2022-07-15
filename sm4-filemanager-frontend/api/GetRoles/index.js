@@ -4,7 +4,7 @@ var azureGroupId = "'" + process.env.AZURE_GROUP_ID  + "'";
 
 // add role names to this object to map them to group ids in your AAD tenant
 const roleGroupMappings = {
-    roleName: azureGroupId    
+    'allowedUsers': '0f737fc4-5714-4cae-a31f-0215555e6124',
 };
 
 module.exports = async function (context, req) {
