@@ -67,13 +67,11 @@ jobs:
           action: "upload"
           app_location: ${{ env.APP_LOCATION }}
           api_location: ${{ env.API_LOCATION }}
-          app_artifact_location: ${{ env.APP_ARTIFACT_LOCATION }}
-	  
+          app_artifact_location: ${{ env.APP_ARTIFACT_LOCATION }}	  
       - name: Azure Login
         uses: azure/login@v1
         with:
-	  creds: ${{ secrets.AZURE_CREDENTIALS }}
-	  
+	  creds: ${{ secrets.AZURE_CREDENTIALS }}	  
       - name: Azure CLI script
         uses: azure/CLI@v1
         with:
