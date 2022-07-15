@@ -1,5 +1,5 @@
 const fetch = require('node-fetch').default;
-var roleName = "'" + process.env.ROLE_NAME "'";
+var roleName = "'" + process.env.ROLE_NAME + "'";
 var azureGroupId = "'" + process.env.AZURE_GROUP_ID  + "'";
 
 // add role names to this object to map them to group ids in your AAD tenant 
