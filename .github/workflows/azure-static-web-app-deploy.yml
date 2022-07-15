@@ -77,7 +77,7 @@ jobs:
         with:
           azcliversion: 2.31.0
           inlineScript: |
-            az staticwebapp appsettings set --name ${{ secrets.AZURE_STATIC_WEBAPP_NAME }} --setting-names "${{ secrets.AZURE_AUTH_ADAPP_CLIENTID }}" "${{ secrets.AZURE_AUTH_ADAPP_CLIENTSECRET }}" --resource-group "${{ secrets.AZURE_RESOURCEGROUP_NAME }}" --subscription "${{ secrets.AZURE_SUBSCRIPTION_NAME }}"
+            az staticwebapp appsettings set --name ${{ secrets.AZURE_STATIC_WEBAPP_NAME }} --setting-names "${{ secrets.AZURE_AUTH_ADAPP_CLIENTID }}" "${{ secrets.AZURE_AUTH_ADAPP_CLIENTSECRET }}" "${{ secrets.ROLE_NAME }}" "${{ secrets.AZURE_GROUP_ID }}" --resource-group "${{ secrets.AZURE_RESOURCEGROUP_NAME }}" --subscription "${{ secrets.AZURE_SUBSCRIPTION_NAME }}"
 
   build_and_deploy_job_test:
     permissions:
