@@ -1,8 +1,10 @@
 const fetch = require('node-fetch').default;
+var roleName = "'" + process.env.ROLE_NAME "'";
+var azureGroupId = "'" + process.env.AZURE_GROUP_ID  + "'";
 
 // add role names to this object to map them to group ids in your AAD tenant
 const roleGroupMappings = {
-    'admin': '13b18d52-fdda-42bf-b726-06ada3f7d3a5',
+    roleName: azureGroupId    
 };
 
 module.exports = async function (context, req) {
