@@ -1,12 +1,8 @@
 {
-    "routes": [
-        {
-            "route": "/api/GetRoles",
-            "allowedRoles": ["anonymous", "authenticated"]
-        },
+    "routes": [       
         {
             "route": "/*",
-            "allowedRoles": [ "authenticated" ]
+            "allowedRoles": [ "anonymous", "authenticated"]
         }
     ],
     "auth": {
