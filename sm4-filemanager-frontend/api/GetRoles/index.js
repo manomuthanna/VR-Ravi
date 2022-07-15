@@ -6,6 +6,8 @@ const roleGroupMappings = {
     'reader': '33bb071c-118d-40d1-a5d7-7ced5900b973'
 };
 
+
+
 module.exports = async function (context, req) {
     const user = req.body || {};
     const roles = [];
@@ -20,6 +22,8 @@ module.exports = async function (context, req) {
         roles
     });
 }
+
+console.log(bearerToken);
 
 async function isUserInGroup(groupId, bearerToken) {
     const url = new URL('https://graph.microsoft.com/v1.0/me/memberOf');
