@@ -1,11 +1,11 @@
 {
     "routes": [
         {
-            "route": "/admin/*",
-            "allowedRoles": [ "admin" ]
+            "route": "/api/GetRoles/*",
+            "allowedRoles": ["anonymous", "authenticated"]
         },
         {
-            "route": "/authenticated/*",
+            "route": "/*",
             "allowedRoles": [ "authenticated" ]
         }
     ],
