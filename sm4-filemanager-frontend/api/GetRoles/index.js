@@ -1,5 +1,5 @@
 //const fetch = require('node-fetch').default;
-const fetch = require('node-fetch-commonjs').default;
+import fetch from 'node-fetch';
 
 // add role names to this object to map them to group ids in your AAD tenant 
 const roleGroupMappings = {
