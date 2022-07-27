@@ -44,22 +44,32 @@ jobs:
     environment: dev
     name: Build and deploy to development environment
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Build And Deploy
-        id: builddeploy
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (i.e. PR comments)
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm' # Unclear if caching npm is necessary. Remove if not.
+          cache-dependency-path: ${{ env.APP_LOCATION }}/package-lock.json
+      - name: NPM clean install
+        run: cd $APP_LOCATION && npm ci
+      - name:  NPM node-fetch Install
+        run:  cd $APP_LOCATION && npm install node-fetch-commonjs
+      - name: Build with NPM
+        run: cd $APP_LOCATION && npm run build
+      - name: Deploy to dev
+        id: deploydev
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN  }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: ${{ env.APP_LOCATION }} # App source code path
-          api_location: ${{ env.API_LOCATION }} # Api source code path - optional
-          output_location: ${{ env.APP_ARTIFACT_LOCATION }} # Built app content directory - optional
-          ###### End of Repository/Build Configurations ######
+          app_location: ${{ env.APP_LOCATION }}
+          api_location: ${{ env.API_LOCATION }}
+          app_artifact_location: ${{ env.APP_ARTIFACT_LOCATION }}	  
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -70,7 +80,6 @@ jobs:
           azcliversion: 2.31.0
           inlineScript: |
             az staticwebapp appsettings set --name ${{ secrets.AZURE_STATIC_WEBAPP_NAME }} --setting-names "${{ secrets.AZURE_AUTH_ADAPP_CLIENTID }}" "${{ secrets.AZURE_AUTH_ADAPP_CLIENTSECRET }}" "${{ secrets.ROLE_NAME }}" "${{ secrets.AZURE_GROUP_ID }}" --resource-group "${{ secrets.AZURE_RESOURCEGROUP_NAME }}" --subscription "${{ secrets.AZURE_SUBSCRIPTION_NAME }}"
-
   build_and_deploy_job_test:
     permissions:
       contents: read        # for actions/checkout to fetch code
