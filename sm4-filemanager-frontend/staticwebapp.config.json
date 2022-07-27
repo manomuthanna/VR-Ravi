@@ -7,7 +7,7 @@
 
         {
             "route": "/*",
-            "allowedRoles": [ "admin"]
+            "allowedRoles": [ "anonymous", "authenticated","admin"]
         }
     ],
     "auth": {
