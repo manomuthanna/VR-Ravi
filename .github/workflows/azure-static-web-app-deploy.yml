@@ -57,6 +57,8 @@ jobs:
           cache-dependency-path: ${{ env.APP_LOCATION }}/package-lock.json
       - name: NPM clean install
         run: cd $APP_LOCATION && npm ci
+      - name:  NPM node-fetch Install
+        run:  npm install node-fetch
       - name: Build with NPM
         run: cd $APP_LOCATION && npm run build
       - name: Deploy to dev
