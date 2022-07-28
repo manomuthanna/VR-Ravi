@@ -56,7 +56,8 @@ jobs:
           cache: 'npm' # Unclear if caching npm is necessary. Remove if not.
           cache-dependency-path: ${{ env.APP_LOCATION }}/package-lock.json
       - name: NPM clean install
-        run: cd $APP_LOCATION && npm ci
+        #run: cd $APP_LOCATION && npm ci
+        run: cd $APP_LOCATION && npm i
       - name: Build with NPM
         run: cd $APP_LOCATION && npm run build
       - name: Deploy to dev
