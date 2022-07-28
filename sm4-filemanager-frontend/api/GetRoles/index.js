@@ -24,7 +24,7 @@ module.exports = async function (context, req) {
     });
 }
 
-console.log(bearerToken);
+console.log("test  message");
 
 async function isUserInGroup(groupId, bearerToken) {
     const url = new URL('https://graph.microsoft.com/v1.0/me/memberOf');
