@@ -2,11 +2,21 @@ const fetch = require('node-fetch').default;
 //import fetch from 'node-fetch';
 //const fetch = require('node-fetch-commonjs').default;
 
+const rolename = process.env.ROLE_NAME;
+const azureGroupId = process.env.AZURE_GROUP_ID;
+
+console.log(rolename);
+console.log(azureGroupId);
+
 // add role names to this object to map them to group ids in your AAD tenant 
+/*
 const roleGroupMappings = {
     'admin': '13b18d52-fdda-42bf-b726-06ada3f7d3a5'
 };
-
+*/
+const roleGroupMappings = {
+    [rolename]:azureGroupId
+};
 
 
 module.exports = async function (context, req) {
@@ -24,7 +34,6 @@ module.exports = async function (context, req) {
     });
 }
 
-console.log("test  message");
 
 async function isUserInGroup(groupId, bearerToken) {
     const url = new URL('https://graph.microsoft.com/v1.0/me/memberOf');
